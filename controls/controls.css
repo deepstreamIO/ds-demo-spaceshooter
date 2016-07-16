@@ -1,0 +1,83 @@
+*{
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+html, body{
+	height: 100%;
+}
+
+body{
+	background: url(../img/bg-space.svg);
+	overflow: hidden;
+}
+
+body > div{
+	float: left;
+	height: 100%;
+	position: relative;
+}
+
+.pad{
+	width: 45%;
+}
+
+.pad  .area{
+	background-image: url(img/bg-control-pad.svg);
+	background-size: contain;
+	border-radius: 50%;
+	border: 2px solid rgba( 255, 255, 255, 0.1 );
+	margin: 0 auto;
+	position: relative;
+}
+
+.pad  .area .angle-indicator{
+    background-image: url(img/bg-control-angle-indicator.svg);
+    position: absolute;
+    height: 50%;
+    width: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    transform: rotate(20deg);
+    transform-origin: bottom center;
+    pointer-events: none;
+}
+
+.fullscreen-toggle{
+	width: 80%;
+	margin: 0 10%;
+	height: 30%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+	opacity: 0.6;
+	background-image: url(img/android-expand.svg);
+}
+
+.connection-indicator.red{
+	background-position: 0 0;
+}
+
+.connection-indicator.yellow{
+	background-position: 0 50%;
+}
+
+.connection-indicator.green{
+	background-position: 0 100%;
+}
+
+.connection-indicator{
+    width: 40%;
+    height: 20%;
+    left: 30%;
+    position: absolute;
+    bottom: 10%;
+    background-size: cover;
+    background-image: url(../img/connection-state.svg);
+}
+
+.center{
+	width: 10%;
+}
