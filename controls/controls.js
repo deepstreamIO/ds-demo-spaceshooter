@@ -1,14 +1,19 @@
 class Area{
-	constructor( type ) {
+	constructor( type, record ) {
 		this._type = type;
+		this._record = record;
 		this._radius = null;
 		this._cX = null;
 		this._cY = null;
+		this._rotationType = ( type === 'move' ? 'body' : 'turret' ) + 'Rotation';
+		this._activeType = type === 'move' ? 'moving' : 'shooting';
 		this._pad = $( '.pad.' + type );
 		this._area = this._pad.find( '.area' );
 		this._angleIndicator = this._pad.find( '.angle-indicator' );
+		this._area.on( 'touchstart mousedown', this._onStart.bind( this ) );
 		this._area.on( 'mousedown mousemove', this._onMouse.bind( this ) );
 		this._area.on( 'touchstart touchmove', this._onTouch.bind( this ) );
+		this._area.on( 'mouseup touchend', this._onEnd.bind( this ) );
 	}
 
 	setSize() {
@@ -27,6 +32,10 @@ class Area{
 		this._cY = this._area.offset().top + this._radius;
 	}
 
+	_onStart() {
+		this._record.set( this._activeType, true );
+	}
+
 	_onMouse( event ) {
 		this._setAngle( this._radius, this._radius, event.offsetX, event.offsetY );
 	}
@@ -42,15 +51,33 @@ class Area{
 	_setAngle( cX, cY, pX, pY ) {
 		var angle =  Math.PI / 2 + Math.atan2( pY - cY, pX - cX );
 		this._angleIndicator.css( 'transform', `rotate(${angle}rad)` );
+		this._record.set( this._rotationType, angle );
+	}
+
+	_onEnd() {
+		this._record.set( this._activeType, false );
 	}
 }
 
-
-
-$(function(){
-	var moveArea = new Area( 'move' );
-	var shootArea = new Area( 'shoot' );
+function startApp( ds ) {
+	var name = 'wolfram'; //TODO make dynamic
+	var record = ds.record.getRecord( 'player/' + name );
+	var moveArea = new Area( 'move', record );
+	var shootArea = new Area( 'shoot', record );
 	var connectionIndicator = $( '.connection-indicator' );
+
+	// Bind resize
+	function setSize() {
+		moveArea.setSize();
+		shootArea.setSize();
+		connectionIndicator.height( connectionIndicator.width() + 5 );
+	}
+	$( window ).resize( setSize );
+	setSize();
+}
+
+// Bind fullscreen toggle
+$(() => {
 	var isFullScreen = false;
 	$( '.fullscreen-toggle' ).on('click touch', ()=>{
 		var el,fn;
@@ -65,11 +92,22 @@ $(function(){
 		isFullScreen = !isFullScreen;
 		fn.call(el);
 	});
-	function setSize() {
-		moveArea.setSize();
-		shootArea.setSize();
-		connectionIndicator.height( connectionIndicator.width() + 5 );
-	}
-	$( window ).resize( setSize );
-	setSize();
+});
+
+$(() => {
+	var ds = deepstream( '192.168.0.12:6020' ).login({}, () => { startApp( ds ); });
+	ds.on( 'connectionStateChanged', connectionState => {
+		var cssClass;
+
+		if( connectionState === 'ERROR' || connectionState === 'CLOSED' ) {
+			cssClass = 'red';
+		}
+		else if ( connectionState === 'OPEN' ) {
+			cssClass = 'green';
+		} else {
+			cssClass = 'yellow';
+		}
+
+		$( '.connection-indicator' ).removeClass( 'red yellow green' ).addClass( cssClass );
+	});
 });
