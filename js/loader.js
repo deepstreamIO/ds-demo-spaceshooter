@@ -23,8 +23,12 @@ class Loader{
 
 	_addExplosionFrames() {
 		var pad = ( n ) => { return n > 9 ? n : '0' + n; };
+		var i, url;
+		global.EXPLOSION_FRAMES = [];
 		for( var i = 1; i < 24; i++ ) {
-			this._assetLoader.add( '/img/explosion/explosion_frame_' + pad( i ) + '.png' );
+			url = '/img/explosion/explosion_frame_' + pad( i ) + '.png';
+			this._assetLoader.add( url );
+			global.EXPLOSION_FRAMES.push( url );
 		}
 	}
 	_onImagesLoaded() {
