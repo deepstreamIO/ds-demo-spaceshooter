@@ -4,6 +4,7 @@ const SPEED = 7;
 module.exports = class BulletManager{
 	constructor( game, initialBullets ) {
 		this._game = game;
+		this._game.on( 'update', this._update.bind( this ) );
 		this._activeBullets = [];
 		this._passiveBullets = [];
 		this._texture = PIXI.Texture.fromImage( '/img/bullet.png' );
@@ -24,7 +25,7 @@ module.exports = class BulletManager{
 		this._activeBullets.push( bullet );
 	}
 
-	update() {
+	_update() {
 		var i, bullet;
 
 		for( i = 0; i < this._activeBullets.length; i++ ) {

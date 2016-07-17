@@ -80,9 +80,19 @@ function startApp( ds ) {
 
 	$('#enter-name').submit( event => {
 		event.preventDefault();
-		var recordName = 'player/' + $( 'input#name' ).val();
+		var name = $( 'input#name' ).val();
+		var recordName = 'player/' + name;
 		ds.record.getRecord( recordName ).whenReady( record => {
-			ds.record.getList( 'players' ).addEntry( recordName );
+			record.set({
+				name: name,
+				moving: false,
+				shooting: false,
+				bodyRotation: 0,
+				turretRotation: 0
+			})
+
+
+			ds.event.subscribe( 'status/' + name );
 			moveArea.setRecord( record );
 			shootArea.setRecord( record );
 			$( '.overlay' ).fadeOut( 500 );
