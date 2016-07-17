@@ -2,9 +2,12 @@ const PIXI = require( 'pixi.js' );
 
 // Speed and acceleration is expressed in pixels per millisecond
 const MAX_SPEED = 5;
+const MAX_HEALTH = 40;
 const ACCELERATION = 0.01;
 const FIRE_INTERVAL = 100;
 const BARREL_LENGTH = 27;
+const HIT_HIGHLIGHT_DURATION = 70;
+
 
 module.exports = class SpaceShip{
 	constructor( game, x, y, name ) {
@@ -14,13 +17,16 @@ module.exports = class SpaceShip{
 		this._game = game;
 
 		this._timeLastBulletFired = 0;
+		this._hitHighlightStart = null;
 
 		// properties
 		this._speed = 0;
-		this._tint = 0xCCCCCC + 0x333333 * Math.random();
+		this._health = MAX_HEALTH;
+		this._tint = 0xFFFFFF; //TINTS[ Math.floor( TINTS.length * Math.random() ) ];
 
 		// text
-		this._text = new PIXI.Text( name, {font : '14px Arial', stroke : '#FFFFFF', fill: '#FFFFFF', align : 'center'});
+		this._textStyle = { font : '14px Arial', fill: 'rgb(0,255,0)', align : 'center' };
+		this._text = new PIXI.Text( name, this._textStyle );
 		this._text.anchor.x = 0.5;
 		this._text.anchor.y = 0.5;
 		this._game.stage.addChild( this._text );
@@ -29,7 +35,6 @@ module.exports = class SpaceShip{
 		this._container = new PIXI.Container();
 		this._container.position.x = x;
 		this._container.position.y = y;
-
 
 		// body
 		this._body = PIXI.Sprite.fromImage( '/img/spaceship-body.png' );
@@ -53,8 +58,21 @@ module.exports = class SpaceShip{
 
 	checkHit( bulletPosition ) {
 		if( this._body.containsPoint( bulletPosition ) ) {
+			this._body.tint = 0xFF0000;
+			this._turret.tint = 0xFF0000;
+			this._hitHighlightStart = performance.now();
+			this._health--;
+			if( this._health <= 0 ) {
+				this._onDestroyed();
+			} else {
+				var f = ( this._health / MAX_HEALTH );
+				var g = Math.floor(f * 255);
+				var r = Math.floor( ( 1 - f ) * 255 );
 
-			console.log( this.name + ' got hit' );
+				this._textStyle.fill = `rgb(${r}, ${g}, 0)`;
+				this._text.style = this._textStyle;
+			}
+
 			return true;
 		}
 		return false;
@@ -64,7 +82,9 @@ module.exports = class SpaceShip{
 		this._game.stage.removeChild( this._container );
 		this._game.stage.removeChild( this._text );
 	}
-
+	_onDestroyed() {
+		console.log( 'EXPLODE' );
+	}
 	_update( msSinceLastFrame, currentTime ) {
 		if( this._record.isReady === false ) {
 			return;
@@ -82,6 +102,12 @@ module.exports = class SpaceShip{
 
 		if( this._speed > MAX_SPEED ) {
 			this._speed = MAX_SPEED;
+		}
+
+		if( this._hitHighlightStart && currentTime > this._hitHighlightStart + HIT_HIGHLIGHT_DURATION ) {
+			this._body.tint = 0xFFFFFF;
+			this._turret.tint = 0xFFFFFF;
+			this._hitHighlightStart = null;
 		}
 
 		this._container.position.x += Math.sin( this._container.rotation )  * this._speed;
