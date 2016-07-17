@@ -4,11 +4,21 @@
 	<title>Spaceshooter controls</title>
 	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" type="text/css" href="controls.css">
+	<link href="https://fonts.googleapis.com/css?family=Galada" rel="stylesheet">
 	<script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="../node_modules/deepstream.io-client-js/dist/deepstream.min.js"></script>
 	<script type="text/javascript" src="controls.js"></script>
 </head>
 <body>
+<div class="overlay">
+	<form action="#" id="enter-name">
+		<label for="name">Please enter your name</label>
+		<div class="inner">
+			<input type="text" name="name" id="name" required />
+			<input type="submit" value="OK" />
+		</div>
+	</form>
+</div>
 <div class="move pad">
 	<div class="area">
 		<div class="angle-indicator"></div>

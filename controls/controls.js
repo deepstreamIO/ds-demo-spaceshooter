@@ -1,7 +1,7 @@
 class Area{
-	constructor( type, record ) {
+	constructor( type ) {
 		this._type = type;
-		this._record = record;
+		this._record = null;
 		this._radius = null;
 		this._cX = null;
 		this._cY = null;
@@ -14,6 +14,10 @@ class Area{
 		this._area.on( 'mousedown mousemove', this._onMouse.bind( this ) );
 		this._area.on( 'touchstart touchmove', this._onTouch.bind( this ) );
 		this._area.on( 'mouseup touchend', this._onEnd.bind( this ) );
+	}
+
+	setRecord( record ) {
+		this._record = record;
 	}
 
 	setSize() {
@@ -60,10 +64,8 @@ class Area{
 }
 
 function startApp( ds ) {
-	var name = 'wolfram'; //TODO make dynamic
-	var record = ds.record.getRecord( 'player/' + name );
-	var moveArea = new Area( 'move', record );
-	var shootArea = new Area( 'shoot', record );
+	var moveArea = new Area( 'move' );
+	var shootArea = new Area( 'shoot' );
 	var connectionIndicator = $( '.connection-indicator' );
 
 	// Bind resize
@@ -72,8 +74,20 @@ function startApp( ds ) {
 		shootArea.setSize();
 		connectionIndicator.height( connectionIndicator.width() + 5 );
 	}
+
 	$( window ).resize( setSize );
 	setSize();
+
+	$('#enter-name').submit( event => {
+		event.preventDefault();
+		var recordName = 'player/' + $( 'input#name' ).val();
+		ds.record.getRecord( recordName ).whenReady( record => {
+			ds.record.getList( 'players' ).addEntry( recordName );
+			moveArea.setRecord( record );
+			shootArea.setRecord( record );
+			$( '.overlay' ).fadeOut( 500 );
+		});
+	});
 }
 
 // Bind fullscreen toggle
@@ -92,9 +106,7 @@ $(() => {
 		isFullScreen = !isFullScreen;
 		fn.call(el);
 	});
-});
 
-$(() => {
 	var ds = deepstream( '192.168.0.12:6020' ).login({}, () => { startApp( ds ); });
 	ds.on( 'connectionStateChanged', connectionState => {
 		var cssClass;
