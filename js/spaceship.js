@@ -17,7 +17,7 @@ module.exports = class SpaceShip{
 
 		// properties
 		this._speed = 0;
-		this._tint = 0xFFFFFF * Math.random();
+		this._tint = 0xCCCCCC + 0x333333 * Math.random();
 
 		// text
 		this._text = new PIXI.Text( name, {font : '14px Arial', stroke : '#FFFFFF', fill: '#FFFFFF', align : 'center'});
@@ -51,8 +51,18 @@ module.exports = class SpaceShip{
 		this._game.on( 'update', this._update.bind( this ) );
 	}
 
+	checkHit( bulletPosition ) {
+		if( this._body.containsPoint( bulletPosition ) ) {
+
+			console.log( this.name + ' got hit' );
+			return true;
+		}
+		return false;
+	}
+
 	destroy() {
 		this._game.stage.removeChild( this._container );
+		this._game.stage.removeChild( this._text );
 	}
 
 	_update( msSinceLastFrame, currentTime ) {
@@ -85,7 +95,7 @@ module.exports = class SpaceShip{
 			var x = this._container.position.x + Math.sin( alpha ) * BARREL_LENGTH;
 			var y = this._container.position.y - Math.cos( alpha ) * BARREL_LENGTH
 
-			this._game.bulletManager.add( x, y, alpha );
+			this._game.bulletManager.add( x, y, alpha, this );
 			this._timeLastBulletFired = currentTime;
 		}
 	}

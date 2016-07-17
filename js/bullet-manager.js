@@ -13,7 +13,7 @@ module.exports = class BulletManager{
 		}
 	}
 
-	add( x, y, alpha ) {
+	add( x, y, alpha, spaceShip ) {
 		if( this._passiveBullets.length === 0 ) {
 			this._createBullet();
 		}
@@ -22,11 +22,12 @@ module.exports = class BulletManager{
 		bullet.position.x = x;
 		bullet.position.y = y;
 		bullet.rotation = alpha;
+		bullet.source = spaceShip;
 		this._activeBullets.push( bullet );
 	}
 
 	_update() {
-		var i, bullet;
+		var i, s, bullet;
 
 		for( i = 0; i < this._activeBullets.length; i++ ) {
 			bullet = this._activeBullets[ i ];
@@ -39,13 +40,30 @@ module.exports = class BulletManager{
 				bullet.position.y < 0 ||
 				bullet.position.y > this._game.renderer.height
 			) {
-				bullet.position.x = -50;
-				bullet.position.y = -50;
-				bullet.rotation = 0;
-				this._activeBullets.splice( i, 1 );
-				this._passiveBullets.push( bullet );
+				// Bullet has left the stage, time to recycle it
+				this._recycleBullet( bullet, i );
+			} else {
+				// Bullet is still on stage, let's perform hit detection
+				for( s = 0; s < this._game.spaceShips.length; s++ ) {
+					if( this._game.spaceShips[ s ] === bullet.source ) {
+						continue;
+					}
+					if( this._game.spaceShips[ s ].checkHit( bullet.position ) ) {
+						this._recycleBullet( bullet, i );
+						continue;
+					}
+				}
 			}
 		}
+	}
+
+	_recycleBullet( bullet, i ) {
+		bullet.position.x = -50;
+		bullet.position.y = -50;
+		bullet.rotation = 0;
+		bullet.source = null;
+		this._activeBullets.splice( i, 1 );
+		this._passiveBullets.push( bullet );
 	}
 
 	_createBullet() {

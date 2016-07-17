@@ -1,5 +1,5 @@
 const PIXI = require( 'pixi.js' );
-const SpaceShip = require( './objects/spaceship' );
+const SpaceShip = require( './spaceship' );
 const BulletManager = require( './bullet-manager' );
 const EventEmitter = require( 'events' ).EventEmitter;
 
@@ -7,7 +7,7 @@ module.exports = class Game extends EventEmitter{
 	constructor( element ) {
 		super();
 		this._element = element;
-		this._spaceShips = [];
+		this.spaceShips = [];
 		this.stage = new PIXI.Container();
 		this.renderer = PIXI.autoDetectRenderer( window.innerWidth, window.innerHeight, {transparent: true}, false );
 		this._element.appendChild( this.renderer.view );
@@ -30,14 +30,14 @@ module.exports = class Game extends EventEmitter{
 	_addPlayer( name ) {
 		var x = this.renderer.width * ( 0.1 + Math.random() * 0.8 );
 		var y = this.renderer.height * ( 0.1 + Math.random() * 0.8 );
-		this._spaceShips.push( new SpaceShip( this, x, y, name ) );
+		this.spaceShips.push( new SpaceShip( this, x, y, name ) );
 	}
 
 	_removePlayer( name ) {
-		for( var i = 0; i < this._spaceShips.length; i++ ) {
-			if( this._spaceShips[ i ].name === name ) {
-				this._spaceShips[ i ].destroy();
-				this._spaceShips.splice( i, 1 );
+		for( var i = 0; i < this.spaceShips.length; i++ ) {
+			if( this.spaceShips[ i ].name === name ) {
+				this.spaceShips[ i ].destroy();
+				this.spaceShips.splice( i, 1 );
 			}
 		}
 	}
