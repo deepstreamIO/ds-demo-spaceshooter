@@ -1,4 +1,4 @@
-const PIXI = require( 'pixi' );
+const PIXI = require( 'pixi.js' );
 const SpaceShip = require( './objects/spaceship' );
 const BulletManager = require( './bullet-manager' );
 const EventEmitter = require( 'events' ).EventEmitter;
@@ -8,14 +8,13 @@ module.exports = class Game extends EventEmitter{
 		super();
 		this._element = element;
 		this._spaceShips = [];
-		this.stage = new PIXI.Stage();
-		this.renderer = PIXI.autoDetectRenderer( window.innerWidth, window.innerHeight, null, true );
+		this.stage = new PIXI.Container();
+		this.renderer = PIXI.autoDetectRenderer( window.innerWidth, window.innerHeight, {transparent: true}, false );
 		this._element.appendChild( this.renderer.view );
 		this._lastFrameTime = 0;
 		this.bulletManager = new BulletManager( this, 200 );
 		global.ds.event.listen( 'status/.*', this._playerOnlineStatusChanged.bind( this ) );
 		requestAnimationFrame( this._tick.bind( this ) );
-		window.xxx = this;
 	}
 
 	_playerOnlineStatusChanged( match, isSubscribed ) {

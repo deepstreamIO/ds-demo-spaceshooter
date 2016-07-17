@@ -1,4 +1,4 @@
-const PIXI = require( 'pixi' );
+const PIXI = require( 'pixi.js' );
 const SPEED = 7;
 
 module.exports = class BulletManager{

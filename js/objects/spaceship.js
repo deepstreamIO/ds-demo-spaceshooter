@@ -1,4 +1,4 @@
-const PIXI = require( 'pixi' );
+const PIXI = require( 'pixi.js' );
 
 // Speed and acceleration is expressed in pixels per millisecond
 const MAX_SPEED = 5;
@@ -12,12 +12,12 @@ module.exports = class SpaceShip{
 		// record
 		this._record = global.ds.record.getRecord( 'player/' + name );
 		this._game = game;
-		window.yyy=this;
+
 		this._timeLastBulletFired = 0;
 
 		// properties
 		this._speed = 0;
-
+		this._tint = 0xFFFFFF * Math.random();
 
 		// text
 		this._text = new PIXI.Text( name, {font : '14px Arial', stroke : '#FFFFFF', fill: '#FFFFFF', align : 'center'});
@@ -26,20 +26,21 @@ module.exports = class SpaceShip{
 		this._game.stage.addChild( this._text );
 
 		// container
-		this._container = new PIXI.DisplayObjectContainer();
+		this._container = new PIXI.Container();
 		this._container.position.x = x;
 		this._container.position.y = y;
 
 
 		// body
 		this._body = PIXI.Sprite.fromImage( '/img/spaceship-body.png' );
+		this._body.tint = this._tint;
 		this._body.anchor.x = 0.5;
 		this._body.anchor.y = 0.5;
 		this._container.addChild( this._body );
 
 		// turret
 		this._turret = PIXI.Sprite.fromImage( '/img/spaceship-turret.png' );
-
+		this._turret.tint = this._tint;
 		this._turret.anchor.x = 0.45;
 		this._turret.anchor.y = 0.6;
 		this._turret.pivot.x = 1;

@@ -1,18 +1,16 @@
 const deepstream = require( 'deepstream.io-client-js' );
-const PIXI = require( 'pixi' );
-const IMAGES = [
-	'/img/spaceship-body.png',
-	'/img/spaceship-turret.png',
-	'/img/bullet.png'
-];
+const PIXI = require( 'pixi.js' );
 
 class Loader{
 	constructor() {
 		this._connectionReady = false;
 		this._imagesReady = false;
 		this._callback = null;
-		this._assetLoader = new PIXI.AssetLoader( IMAGES );
-		this._assetLoader.onComplete = this._onImagesLoaded.bind( this );
+		this._assetLoader = new PIXI.loaders.Loader();
+		this._assetLoader.add( '/img/spaceship-body.png' );
+		this._assetLoader.add( '/img/spaceship-turret.png' );
+		this._assetLoader.add( '/img/bullet.png' );
+		this._assetLoader.once( 'complete', this._onImagesLoaded.bind( this ) );
 	}
 
 	load( deepstreamUrl, callback ) {
