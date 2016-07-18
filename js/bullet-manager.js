@@ -19,6 +19,7 @@ module.exports = class BulletManager{
 		}
 
 		var bullet = this._passiveBullets.pop();
+		bullet.tint = spaceShip.tint;
 		bullet.position.x = x;
 		bullet.position.y = y;
 		bullet.rotation = alpha;

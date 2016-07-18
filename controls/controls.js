@@ -62,26 +62,20 @@ class Area{
 		this._record.set( this._activeType, false );
 	}
 }
+$(() => {
 
-function startApp( ds ) {
-	var moveArea = new Area( 'move' );
-	var shootArea = new Area( 'shoot' );
-	var connectionIndicator = $( '.connection-indicator' );
+	var name;
+	var recordName;
+	var moveArea;
+	var shootArea;
+	var connectionIndicator;
+	var ds;
+	var isFullScreen = false;
 
-	// Bind resize
-	function setSize() {
-		moveArea.setSize();
-		shootArea.setSize();
-		connectionIndicator.height( connectionIndicator.width() + 5 );
-	}
+	function joinGame() {
+		name = $( 'input#name' ).val();
+		recordName = 'player/' + name;
 
-	$( window ).resize( setSize );
-	setSize();
-
-	$('#enter-name').submit( event => {
-		event.preventDefault();
-		var name = $( 'input#name' ).val();
-		var recordName = 'player/' + name;
 		ds.record.getRecord( recordName ).whenReady( record => {
 			record.set({
 				name: name,
@@ -89,20 +83,48 @@ function startApp( ds ) {
 				shooting: false,
 				bodyRotation: 0,
 				turretRotation: 0
-			})
+			});
 
+			record.once( 'delete', () => {
+				$( '.overlay' ).addClass( 'game-over' ).fadeIn( 300 );
+				$( '#game-over button' ).one( 'touch click', joinGame );
+				ds.event.unsubscribe( 'status/' + name );
+				record.discard();
+			});
 
 			ds.event.subscribe( 'status/' + name );
 			moveArea.setRecord( record );
 			shootArea.setRecord( record );
-			$( '.overlay' ).fadeOut( 500 );
+			$( '.overlay' ).removeClass( 'game-over' ).fadeOut( 500 );
 		});
-	});
-}
+	}
+
+	function startApp( ds ) {
+		moveArea = new Area( 'move' );
+		shootArea = new Area( 'shoot' );
+		connectionIndicator = $( '.connection-indicator' );
+
+		// Bind resize
+		function setSize() {
+			moveArea.setSize();
+			shootArea.setSize();
+			connectionIndicator.height( connectionIndicator.width() + 5 );
+		}
+
+		$( window ).resize( setSize );
+		setSize();
+
+		$('#enter-name').submit( event => {
+			event.preventDefault();
+			joinGame();
+		});
+	}
+
+
+
 
 // Bind fullscreen toggle
-$(() => {
-	var isFullScreen = false;
+
 	$( '.fullscreen-toggle' ).on('click touch', ()=>{
 		var el,fn;
 
@@ -117,7 +139,7 @@ $(() => {
 		fn.call(el);
 	});
 
-	var ds = deepstream( '192.168.0.12:6020' ).login({}, () => { startApp( ds ); });
+	ds = deepstream( '192.168.0.12:6020' ).login({}, () => { startApp( ds ); });
 	ds.on( 'connectionStateChanged', connectionState => {
 		var cssClass;
 

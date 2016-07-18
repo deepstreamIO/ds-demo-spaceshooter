@@ -21,22 +21,22 @@ module.exports = class Game extends EventEmitter{
 		var name = match.replace( 'status/', '' );
 
 		if( isSubscribed ) {
-			this._addPlayer( name );
+			this.addPlayer( name );
 		} else {
-			this._removePlayer( name );
+			this.removePlayer( name );
 		}
 	}
 
-	_addPlayer( name ) {
+	addPlayer( name ) {
 		var x = this.renderer.width * ( 0.1 + Math.random() * 0.8 );
 		var y = this.renderer.height * ( 0.1 + Math.random() * 0.8 );
 		this.spaceShips.push( new SpaceShip( this, x, y, name ) );
 	}
 
-	_removePlayer( name ) {
+	removePlayer( name ) {
 		for( var i = 0; i < this.spaceShips.length; i++ ) {
 			if( this.spaceShips[ i ].name === name ) {
-				this.spaceShips[ i ].destroy();
+				this.spaceShips[ i ].remove();
 				this.spaceShips.splice( i, 1 );
 			}
 		}

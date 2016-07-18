@@ -26,7 +26,7 @@ body{
 	justify-content: center;
 }
 
-.overlay form{
+.overlay > *{
 	display: block;
     margin: 0 auto;
     background: #fff1e1;
@@ -36,21 +36,33 @@ body{
     border-radius: 5px;
 }
 
-.overlay form *{
+.overlay.game-over form{
+	display: none;
+}
+
+.overlay.game-over #game-over{
+	display: block;
+}
+
+#game-over{
+	display: none;
+}
+
+.overlay *{
 	font-size: 30px;
 	font-family: 'Galada', cursive;
 	color: #333;
 }
 
-.overlay form label{
+.overlay label{
 	display: block;
 }
 
-.overlay form .inner{
+.overlay .inner{
 	position: relative;
 }
 
-.overlay form input[type=text]{
+.overlay input[type=text]{
     background: #fff;
     border: 2px solid #ccc;
     font-size: 30px;
@@ -62,7 +74,8 @@ body{
     float: left;
 }
 
-.overlay form input[type=submit]{
+.overlay input[type=submit],
+.overlay button{
     border: none;
     background: #1d2152;
     color: #fff;
@@ -71,6 +84,13 @@ body{
     margin-left: 2%;
     display: block;
     float: left;
+}
+
+.overlay button{
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 1% 0;
 }
 
 .pad, .center{

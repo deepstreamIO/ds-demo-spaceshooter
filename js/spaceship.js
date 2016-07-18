@@ -2,28 +2,39 @@ const PIXI = require( 'pixi.js' );
 
 // Speed and acceleration is expressed in pixels per millisecond
 const MAX_SPEED = 5;
-const MAX_HEALTH = 50;
+const MAX_HEALTH = 30;
 const ACCELERATION = 0.01;
 const FIRE_INTERVAL = 100;
 const BARREL_LENGTH = 27;
 const HIT_HIGHLIGHT_DURATION = 70;
-
+const TINTS = [
+	0x00FF00,
+	0x66FFAA,
+	0x00FFFF,
+	0xFF00FF,
+	0xFFAAFF,
+	0x00FF33,
+	0x99FF44,
+	0xFFFF00,
+	0xFF6600
+];
 
 module.exports = class SpaceShip{
 	constructor( game, x, y, name ) {
-		this.name = name;
+
 		// record
 		this._record = global.ds.record.getRecord( 'player/' + name );
+
+		// public properties
+		this.name = name;
+		this.tint = this._getTint();
+
 		this._game = game;
 		this._isDestroyed = false;
-
 		this._timeLastBulletFired = 0;
 		this._hitHighlightStart = null;
-
-		// properties
 		this._speed = 0;
 		this._health = MAX_HEALTH;
-		this._tint = 0xFFFFFF; //TINTS[ Math.floor( TINTS.length * Math.random() ) ];
 
 		// text
 		this._textStyle = { font : '14px Arial', fill: 'rgb(0,255,0)', align : 'center' };
@@ -39,14 +50,14 @@ module.exports = class SpaceShip{
 
 		// body
 		this._body = PIXI.Sprite.fromImage( '/img/spaceship-body.png' );
-		this._body.tint = this._tint;
+		this._body.tint = this.tint;
 		this._body.anchor.x = 0.5;
 		this._body.anchor.y = 0.5;
 		this._container.addChild( this._body );
 
 		// turret
 		this._turret = PIXI.Sprite.fromImage( '/img/spaceship-turret.png' );
-		this._turret.tint = this._tint;
+		this._turret.tint = this.tint;
 		this._turret.anchor.x = 0.45;
 		this._turret.anchor.y = 0.6;
 		this._turret.pivot.x = 1;
@@ -85,9 +96,22 @@ module.exports = class SpaceShip{
 		return false;
 	}
 
-	destroy() {
+	_getTint() {
+		var sum = 0, i;
+
+		for( i = 0; i < this.name.length; i++ ) {
+			sum += this.name.charCodeAt( i );
+		}
+
+		return TINTS[ sum % TINTS.length ];
+	}
+
+	remove() {
 		this._game.stage.removeChild( this._container );
 		this._game.stage.removeChild( this._text );
+		this._game.stage.removeChild( this._explosion );
+		this._record.delete();
+		this._record.discard();
 	}
 
 	_onDestroyed() {
@@ -111,7 +135,7 @@ module.exports = class SpaceShip{
 
 		if( this._isDestroyed ) {
 			if( this._explosion.currentFrame + 1 === this._explosion.totalFrames ) {
-
+				this._game.removePlayer( this.name );
 			}
 			this._container.alpha = ( 1 - ( this._explosion.currentFrame + 1 ) ) / this._explosion.totalFrames;
 		}
@@ -125,8 +149,8 @@ module.exports = class SpaceShip{
 		}
 
 		if( this._hitHighlightStart && currentTime > this._hitHighlightStart + HIT_HIGHLIGHT_DURATION ) {
-			this._body.tint = 0xFFFFFF;
-			this._turret.tint = 0xFFFFFF;
+			this._body.tint = this.tint;
+			this._turret.tint = this.tint;
 			this._hitHighlightStart = null;
 		}
 
