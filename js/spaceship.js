@@ -2,7 +2,7 @@ const PIXI = require( 'pixi.js' );
 
 // Speed and acceleration is expressed in pixels per millisecond
 const MAX_SPEED = 5;
-const MAX_HEALTH = 30;
+const MAX_HEALTH = 10;
 const ACCELERATION = 0.01;
 const FIRE_INTERVAL = 100;
 const BARREL_LENGTH = 27;
