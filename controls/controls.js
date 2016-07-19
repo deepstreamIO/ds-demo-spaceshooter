@@ -89,7 +89,7 @@ $(() => {
 				$( '.overlay' ).addClass( 'game-over' ).fadeIn( 300 );
 				$( '#game-over button' ).one( 'touch click', joinGame );
 				ds.event.unsubscribe( 'status/' + name );
-				record.discard();
+				delete ds.record._records[ 'player/' + name ];
 			});
 
 			ds.event.subscribe( 'status/' + name );
