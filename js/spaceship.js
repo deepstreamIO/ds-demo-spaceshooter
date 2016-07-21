@@ -1,12 +1,24 @@
 const PIXI = require( 'pixi.js' );
 
-// Speed and acceleration is expressed in pixels per millisecond
+// Maximum speed in pixels per millisecond a ship can reach
 const MAX_SPEED = 5;
+
+// Amount of hits a ship can take before it explodes
 const MAX_HEALTH = 10;
+
+// Increase of speed in pixels per millisecond
 const ACCELERATION = 0.01;
+
+// Time that passes between shots
 const FIRE_INTERVAL = 100;
+
+// The length of the turret's barrel. Shooting starts at its end
 const BARREL_LENGTH = 27;
+
+// The amount of milliseconds the ship flashes red after its hit
 const HIT_HIGHLIGHT_DURATION = 70;
+
+// Different colors for different players
 const TINTS = [
 	0x00FF00,
 	0x66FFAA,
