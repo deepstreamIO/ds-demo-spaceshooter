@@ -2,7 +2,7 @@
  * @class Area
  *
  * This class represents one of the directional pads
- * 
+ *
  * (we're not using ES6 syntax here as Safari on iPhone doesn't support it
  * yet - and Babel is a bit overkill for a single file)
  *
@@ -240,7 +240,7 @@ $(function() {
 
 	// Create the connection to the deepstream server and login straight away
 	// Replace the IP with the one for your own server
-	ds = deepstream( '192.168.3.4:6020' ).login({},  startApp );
+	ds = deepstream( 'localhost:6020' ).login({},  startApp );
 
 	// Listen for connection state changes. Deepstream has 11 different connection states,
 	// but we've only got three colors - so we need to normalize things a bit
