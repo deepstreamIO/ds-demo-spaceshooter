@@ -23,10 +23,13 @@ We want this valvety smooth 60 FPS framerate - and we want our controls to play 
 But there's also network latency! Information needs time to travel - for optic fibre about 67ms for 10.000km, not counting switches, routers and other network hops that further slow it down. That means that if you're running your server in the US and play in europe, your game won't feel particularly responsive.
 
 ## About this tutorial
-This tutorial will take you trough the high level concepts and all the tricky bits of the implementation - for brevities sake though it skips a lot of project setup, css / styling and most of the more common aspects. To get an impression of how everything fits together, quickly head over to the [Github Repository](https://github.com/deepstreamIO/ds-demo-spaceshooter) - don't worry, I'll wait.
+This tutorial will take you trough the high level concepts and all the tricky bits of the implementation - for brevities sake it skips a lot of project setup, css / styling and most of the more common aspects. To get an impression of how everything fits together, quickly head over to the [Github Repository](https://github.com/deepstreamIO/ds-demo-spaceshooter) - don't worry, I'll wait.
 
-## Let's start with the structure
-First off, we'll create three files:
+### Latest browsers only
+This tutorial makes liberal use of new browser features like WebGL and ES6 syntax. It works well in all latest browsers (tested in Chrome 51, FF 47 & Edge 25), but won't be much fun in your good old IE 8.
+
+## The structure
+Let's start by creating three files:
 
 - **game.js** will contain the main game object that creates the PIXI stage,
 adds and removes spaceships to it and manages the game loop (more about that later)
@@ -37,6 +40,7 @@ adds and removes spaceships to it and manages the game loop (more about that lat
 PIXI is based on hierarchies of display objects such as "sprites" or "movie clips". These objects can be grouped in containers. Every PIXI project starts with an outermost container that we'll call "stage".
 
 ```javascript
+//in game.js
 class Game{
     constructor( element ) {
         this.stage = new PIXI.Container();
@@ -45,23 +49,28 @@ class Game{
 ```
 To turn your object-hierarchie into an image, you need a "renderer". PIXI will try to use WebGL for rendering, but can fall back to good old canvas if necessary.
 
-For our spaceshooter, we'll let PIXI decide what renderer to use, the only important things are: It needs to extend to the full size of the screen and shouldn't have a background color (so that we can place a spacy image behind)
+For our spaceshooter, we'll leave it to PIXI to decide which renderer to use. The only requirements are: It needs to extend to the full size of the screen and shouldn't have a background color (so that we can place a spacy image behind)
 
-To do this, add the following lines to your game class: 
+To do this, add the following lines to your game class' constructor: 
 
 ```javascript
-constructor( element ) {
-        this.stage = new PIXI.Container();
-        this.renderer = PIXI.autoDetectRenderer( window.innerWidth, window.innerHeight, {transparent: true}, false );
-        element.appendChild( this.renderer.view );
+    this.renderer = PIXI.autoDetectRenderer(
+        window.innerWidth,
+        window.innerHeight,
+        {transparent: true},
+        false
+    );
+    element.appendChild( this.renderer.view );
 }
 ```
 
 
 ## Adding a spaceship
-Time to add a spaceship to our stage. Spaceship's are just a collection of small images, so called sprites. To create one, we'll tell PIXI to create a `PIXI.Sprite.fromImage( url )` and move it to its initial coordinates. By default, these coordinates specify the top-left corner of our sprite. Instead, we want them to specify the center, so we also need to set the sprite's `anchor` position to 0.5 for both x and y. This will also be used as a pivot-point when we rotate the sprite later on. Finally, we'll add the spaceship to the stage.
+Time to add a spaceship to our stage. Our ship will be composed of small images, called "Sprites". To create one, we'll tell PIXI to create a `PIXI.Sprite.fromImage( url )` and move it to its initial coordinates. 
+By default, these coordinates specify the top-left corner of our sprite. Instead, we want them to specify the center, so we also need to set the sprite's `anchor` position to 0.5 for both x and y. This will also be used as a pivot-point when we rotate the sprite later on. Finally, we'll add the spaceship to the stage.
 
 ```javascript
+// in spaceship.js
 class SpaceShip{
     constructor( game, x, y ) {
         this._game = game;
@@ -76,7 +85,12 @@ class SpaceShip{
 ```
 
 ## Rendering the stage
-So - were's our spaceship? We've created a stage and a renderer so far, but we haven't told the renderer to render the stage yet. Let's do this now. Every time the browser is ready to draw a new frame, we want the renderer to kick in and render our stage. For this, we'll use `requestAnimationFrame( callback )`. This schedules a callback to be executed, the next time a frame can be drawn. We'll add this method twice in `game.js` - once to draw the initial frame and from within our `_tick()` method call itself for all eternity.
+So - where's our spaceship? We've created a stage and a renderer so far, but we haven't told the renderer to render the stage yet. We'll do this by adding a method called `_tick()`.
+
+### `_tick()` ?!?
+Why don't we just call it `render()` or something sensible like that? Because this method will become the pacemaker for our game. Every time a frame will be rendered, this method will calculate the amount of time that has passed since the last frame, notify all the objects in the game about the impeding update, render the stage and finally schedule the next frame.
+ 
+For this, we'll use a method called `requestAnimationFrame( callback )`. This schedules a function to be executed the next time a frame can be drawn. We'll add this method twice in `game.js` - once at the end of our constructor to draw the initial frame and once from within our `_tick()` method itself.
 
 ```javascript
 // in game.js
@@ -89,6 +103,7 @@ _tick() {
     this.renderer.render( this.stage );
     requestAnimationFrame( this._tick.bind( this ) );
 }
+```
 
 
 
