@@ -1,5 +1,5 @@
 $(function() {
-	var DEEPSTREAM_URL = '192.168.3.4:6020';
+	var DEEPSTREAM_URL = 'localhost:6020';
 	var name;
 	var recordName;
 	var moveArea;
