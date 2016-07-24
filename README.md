@@ -1,21 +1,21 @@
 # Building a multiplayer space shooter with deepstream.io and pixi.js
 
-![Space shooter](./tutorial-images/in-game-long.gif)
-
 > Space - the final frontier. And a surprisingly good place to blow stuff up. In this tutorial we'll walk through the steps of building a multiplayer space shooter - but one with a twist: Rather than everyone playing away on their own computer, we'll bring the spirit of good old living-room co-op to the modern age.
 
-<iframe width="640" height="360" src="https://www.youtube.com/embed/fSl7KisexCc?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+![Space shooter](./tutorial-images/in-game-long.gif)
 
 The game itself will run in a single browser window. Every player opens a URL on their smartphone which turns it into a gamepad and allows their ship to join the game.
+
+<iframe width="640" height="360" src="https://www.youtube.com/embed/fSl7KisexCc?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
 
 ## What we'll be using
 Let's keep things simple: We'll use [Pixi.js](http://www.pixijs.com/) for rendering and [deepstream.io](https://deepstream.io/)  as a multiplayer server.
 
 ![PIXI JS](./tutorial-images/pixijs.png)
-- **Pixi.JS** is a 2D rendering library for browsers. It uses WebGL and leaves the heavy lifting to the GPU if possible, but falls back to canvas if not. Pixi is just that: a rendering library, giving you all the Stage, Sprite and Container objects you'd expect, but no game logic constructs - those are our job.
+**Pixi.JS** is a 2D rendering library for browsers. It uses WebGL and leaves the heavy lifting to the GPU if possible, but falls back to canvas if not. Pixi is just that: a rendering library, giving you all the Stage, Sprite and Container objects you'd expect, but no game logic constructs - those are our job.
 
 ![Deepstream.io](./tutorial-images/deepstreamio.png)
-- **deepstream.io** is a new type of server for realtime connectivity. It handles all sorts of persistent connections, e.g. TCP or Websocket for browsers and provides high level concepts like data-sync, pub-sub and request-response. But most importantly for this tutorial: It's superfast.
+**deepstream.io** is a new type of server for realtime connectivity. It handles all sorts of persistent connections, e.g. TCP or Websocket for browsers and provides high level concepts like data-sync, pub-sub and request-response. But most importantly for this tutorial: It's superfast.
 
 ### 60 FPS
 We want this valvety smooth 60 FPS framerate - and we want our controls to play along. This means that every touch on the gamepad needs to be translated into an action on the screen in less than 16.6 milliseconds (one frame) - something pixi and deepstream are perfectly capable of.
@@ -161,13 +161,13 @@ our spaceship should now look reasonably complete
 
 ## Controls
 
-![controls](./tutorials-images/4-controls.png)
+![controls](./tutorial-images/4-controls.png)
 
 Each spaceship will be individually controlled by a player via a smartphone-turned-gamepad. The control scheme is simple: Touching the left pad moves the ship, touching the right pad shoots, both are independent and work at 360 degrees - if you've ever played games like [Super Smash TV](https://www.youtube.com/watch?v=GdA_-2hnhJY) on the Super Nintendo you know the drill. Add a fullscreen toggle and a connection status indicator and we're good to go.
 
 On the technical site, the gamepad is just another HTML page with its own CSS and JavaScript. Both gamepads and the game itself are connected to a deepstream server. User-input from each player's gamepad is stored in a [record](https://deepstream.io/tutorials/core/datasync-records/) which deepstream syncs with the game itself.
 
-![architecture](./tutorials-images/5-architecture.png)
+![architecture](./tutorial-images/5-architecture.png)
 
 ### Starting a deepstream server
 
@@ -250,7 +250,7 @@ area.on( 'touchend', function( event ){
 
 Next up, we want to sync the angle of the user's touch with the ship / turret in the game. Every `touchmove` event provides the x and y coordinates of where the touch happened. Since we know the center of our gamepad, we can now calculate the angle of the touch in radians:
 
-![control angles](./tutorials-images/6-angles.png)
+![control angles](./tutorial-images/6-angles.png)
 
 For this we'll use the arctangent function with two arguments... don't worry, that sounds harder than it is:
 
