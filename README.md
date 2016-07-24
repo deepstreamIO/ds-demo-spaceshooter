@@ -39,7 +39,7 @@ adds and removes spaceships to it and manages the game loop (more about that lat
 - **[index.js](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/js/spaceship.js)** will start everything up
 
 ## Creating the stage
-PIXI is based on hierarchies of display objects such as "sprites" or "movie clips". These objects can be grouped in containers. Every PIXI project starts with an outermost container that we'll call "stage".
+PIXI is based on hierarchies of display objects such as "sprites" or "movie clips". These objects can be grouped in "containers". Every PIXI project starts with an outermost container that we'll call "stage".
 
 ```javascript
 //in game.js
@@ -49,11 +49,11 @@ class Game{
     }
 }
 ```
-To turn your object-hierarchy into an image, you need a "renderer". PIXI will try to use WebGL for rendering, but can fall back to good old canvas if necessary.
+To turn your object-hierarchy into an image, you'll need a "renderer". PIXI will try to use WebGL for rendering, but can fall back canvas if necessary.
 
-For our spaceshooter, we'll leave it to PIXI to decide which renderer to use. The only requirements are: It needs to extend to the full size of the screen and shouldn't have a background color (so that we can place a spacy image behind)
+For our spaceshooter, we'll leave it to PIXI to decide which renderer to use. The only requirements are: It needs to extend to the full size of the screen and shouldn't have a background color (so that we can place a spacy image behind it)
 
-To do this, add the following lines to your game class' constructor:
+To create a renderer, add the following lines to your game class' constructor:
 
 ```javascript
     this.renderer = PIXI.autoDetectRenderer(
@@ -69,7 +69,7 @@ To do this, add the following lines to your game class' constructor:
 
 ## Adding a spaceship
 Time to add a spaceship to our stage. Our ship will be composed of small images, called "Sprites". To create one, we'll tell PIXI to create a `PIXI.Sprite.fromImage( url )` and move it to its initial coordinates.
-By default, these coordinates specify the top-left corner of our sprite. Instead, we want them to specify the center, so we also need to set the sprite's `anchor` position to 0.5 for both x and y. This will also be used as a pivot-point when we rotate the sprite later on. Finally, we'll add the spaceship to the stage.
+By default, these coordinates specify the top-left corner of our sprite. Instead, we want them to specify the center, so we also need to set the sprite's `anchor` position to 0.5 for both x and y. This will also be used as the pivot-point when we rotate the sprite later on. Finally, we'll add the spaceship to the stage.
 
 ```javascript
 // in spaceship.js
@@ -90,9 +90,9 @@ class SpaceShip{
 So - where's our spaceship? We've created a stage and a renderer so far, but we haven't told the renderer to render the stage yet. We'll do this by adding a method called `_tick()`.
 
 ### `_tick()` ?!?
-Why don't we just call it `render()` or something sensible like that? Because this method will become the pacemaker for our game. Every time a frame will be rendered, this method will calculate the amount of time that has passed since the last frame, notify all the objects in the game about the impeding update, render the stage and finally schedule the next frame.
+Why don't we just call it `render()` or something sensible like that? Because this method will become the pacemaker for our game. Every time a frame is about to be rendered, this method will calculate the amount of time that has passed since the last frame, notify all the objects in the game about the impeding update, render the stage and finally schedule the next frame.
 
-For this, we'll use a method called `requestAnimationFrame( callback )`. This schedules a function to be executed the next time a frame can be drawn. We'll add this method twice in `game.js` - once at the end of our constructor to draw the initial frame and once from within our `_tick()` method itself.
+For this, we'll use a browser method called `requestAnimationFrame( callback )`. This schedules a function to be executed the next time a frame can be drawn. We'll add this method twice in `game.js` - once at the end of our constructor to draw the initial frame and once from within our `_tick()` method itself.
 
 ```javascript
 // in game.js
@@ -112,7 +112,7 @@ If everything worked, your game should now look like this:
 ![untinted spaceship without turret](./tutorial-images/1-spaceship-plain.png)
 
 ## A bit of color
-Our spaceship still looks a bit pale. To add a different color for each player, we use a grayscale base image and then set a property called `tint`.
+So far, so good, but our spaceship still looks a bit pale. And no wonder, the sprite we've used was just a grayscale image. To add a different color for each player, we need to set a property called `tint`.
 
 ```javascript
 this._body.tint = 0x00FF00; // green in hex
@@ -165,19 +165,18 @@ our spaceship should now look reasonably complete
 
 ![controls](./tutorial-images/4-controls.png)
 
-Each spaceship will be individually controlled by a player via a smartphone-turned-gamepad. The control scheme is simple: Touching the left pad moves the ship, touching the right pad shoots, both are independent and work at 360 degrees - if you've ever played games like [Super Smash TV](https://www.youtube.com/watch?v=GdA_-2hnhJY) on the Super Nintendo you know the drill. Add a fullscreen toggle and a connection status indicator and we're good to go.
+Each spaceship will be individually controlled by a player via a smartphone-turned-gamepad. The control scheme is simple: Touching the left pad moves the ship, touching the right pad shoots, both are independent and work at 360 degrees - if you've ever played games like [Super Smash TV](https://www.youtube.com/watch?v=GdA_-2hnhJY) on the Super Nintendo you know the drill.
 
-On the technical site, the gamepad is just another HTML page with its own CSS and JavaScript. Both gamepads and the game itself are connected to a deepstream server. User-input from each player's gamepad is stored in a [record](https://deepstream.io/tutorials/core/datasync-records/) which deepstream syncs with the game itself.
+Technically, the gamepad is just another [HTML page](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/controls/index.html) with its own [CSS](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/controls/controls.css) and [JavaScript](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/controls/controls.js). Both the controls and the game are connected to a deepstream server. User-input from each player's gamepad is stored in a [record](https://deepstream.io/tutorials/core/datasync-records/) which deepstream syncs with the game itself.
 
 ![architecture](./tutorial-images/5-architecture.png)
 
 ### Starting a deepstream server
 From here on, you'll need a running deepstream server. Just get the version for your operating system from the [install page](https://deepstream.io/install/) and follow the instructions there.
 
-### Building the controls
+### Connecting to the server
 Once your server is running, its time to get started on the controls. We'll gloss over the [HTML](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/controls/index.html) and [CSS](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/controls/controls.css) and focus purely on the JavaScript part.
 
-### Connecting to the server
 deepstream uses small client libraries to connect to the server and interact with it. For our example, we'll need the JavaScript client. You can get it from a CDN
 
 ```html
@@ -199,7 +198,7 @@ ds = deepstream( 'localhost:6020' ).login({}, function( success ){
 });
 ```
 
-You might notice that we've fallen back to `function` and ES5 syntax. ES6 support isn't as established on phones as it is on desktop. If you prefer to stick with ES6, you can always use a transpiler like [Babel](https://babeljs.io/).
+You might notice that we've fallen back to `function` and ES5 syntax. ES6 support isn't as established on phones as it is on desktosp. If you prefer to stick with ES6, you can always use a transpiler like [Babel](https://babeljs.io/).
 
 ### Creating a record
 Time to dive into the mechanics behind our game: [records](https://deepstream.io/tutorials/core/datasync-records/).
@@ -215,7 +214,7 @@ ds.record.getRecord( `player/johndoe` ).whenReady(function( record ) {
 });
 ```
 
-Once we've got the name and created the record, it's time to set its initial value
+Once the record is ready it's time to set its initial value:
 
 ```javascript
 record.set({
@@ -232,8 +231,8 @@ record.set({
 });
 ```
 
-### Wiring up the gamepads
-From here on, these values will be updated whenever the user interacts with one of the gamepads. We'll use a simplified version of the code for this tutorial, to get the full picture have a look [here](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/controls/pad.js)
+### Wiring up the control pads
+From here on, these values will be updated whenever the user interacts with one of the control pads. We'll use a simplified version of the code for this tutorial, to get the full picture have a look [here](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/controls/pad.js)
 
 First off, let's start with some basic interactions. Every time the user touches a pad, we want to set `moving` or `shooting` to `true` and back to `false` again once the touch ends:
 
@@ -276,11 +275,11 @@ A [game loop](http://obviam.net/index.php/the-android-game-loop/) is a central c
 
 In the update phase, each entity within the game updates its position, orientation, health, status and so on.
 
-This is usually followed by a global update phase that determines whether every player is still alive, being hit etc.
+This is usually followed by a global update phase that determines whether each player is still alive, being hit etc.
 
 Finally, the next frame of the game is drawn by the renderer. This loop happens continuously for every frame, ideally 60 times a second. This means that the logic that's executed on every tick needs to be as performant as possible.
 
-For our game, we'll create a simple gameloop by having the game class emit an `update` event every time before the renderer kicks in. Our spaceship can now subscribe to this event. As usual, we'll keep things simple for this tutorial. You can find the full update cycle for the spaceship [here](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/js/spaceship.js#L199)
+For our spaceshooter, we'll create a simple gameloop by having the game class emit an `update` event every time before the renderer kicks in. Our spaceship can now subscribe to this event. As usual, we'll keep things simple for this tutorial. You can find the full update cycle for the spaceship [here](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/js/spaceship.js#L199)
 
 To apply the input from our controls, we simply get the data from the record and set it as the body's and turret's rotation parameter
 
@@ -303,9 +302,13 @@ module.exports = class SpaceShip{
 }
 ```
 
+Now whenever we touch either control pad, our ship's body or turret should rotate accordingly on the screen:
+
+![controls rotate ship](./tutorial-images/controls-rotation.gif)
 
 ## So much for part one
-Phew, thanks for holding out with me for so long. We've now got all the essentials in place, but at the moment our spaceship doesn't move or shoot and generally just sits around there like a fish on dry land. The good news is, we'll cover all the good stuff in part 2 of this tutorial.
+Phew, thanks for holding out with me for so long. We've now got all the essential bits in place, but at the moment our spaceship doesn't move or shoot and generally just sits around there like a fish on dry land. The good news is: we'll cover all the good stuff in part 2 of this tutorial.
 
-There you'll learn how to add / remove players dynamically whenever a client connects, add proper asset loading, handle shooting and hit detection, handcraft some awesome explosions and how to deal with player destruction / recreating.
+There you'll learn how to add / remove players dynamically whenever a client connects, add proper asset loading, handle shooting and hit detection, handcraft some awesome explosions and deal with player destruction / recreating.
 
+Stay tuned...
