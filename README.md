@@ -1,4 +1,4 @@
-# Building a multiplayer space shooter with deepstream.io and pixi.js
+# Building a multiplayer space shooter: Part I
 
 > Space - the final frontier. And a surprisingly good place to blow stuff up. In this tutorial we'll walk through the steps of building a multiplayer space shooter - but one with a twist: Rather than everyone playing away on their own computer, we'll bring the spirit of good old living-room co-op to the modern age.
 
@@ -12,18 +12,20 @@ The game itself will run in a single browser window. Every player opens a URL on
 Let's keep things simple: We'll use [Pixi.js](http://www.pixijs.com/) for rendering and [deepstream.io](https://deepstream.io/)  as a multiplayer server.
 
 ![PIXI JS](./tutorial-images/pixijs.png)
+
 **Pixi.JS** is a 2D rendering library for browsers. It uses WebGL and leaves the heavy lifting to the GPU if possible, but falls back to canvas if not. Pixi is just that: a rendering library, giving you all the Stage, Sprite and Container objects you'd expect, but no game logic constructs - those are our job.
 
 ![Deepstream.io](./tutorial-images/deepstreamio.png)
+
 **deepstream.io** is a new type of server for realtime connectivity. It handles all sorts of persistent connections, e.g. TCP or Websocket for browsers and provides high level concepts like data-sync, pub-sub and request-response. But most importantly for this tutorial: It's superfast.
 
 ### 60 FPS
-We want this valvety smooth 60 FPS framerate - and we want our controls to play along. This means that every touch on the gamepad needs to be translated into an action on the screen in less than 16.6 milliseconds (one frame) - something pixi and deepstream are perfectly capable of.
+We want this velvety smooth 60 FPS framerate - and we want our controls to play along. This means that every touch on the gamepad needs to be translated into an action on the screen in less than 16.6 milliseconds (one frame) - something pixi and deepstream are perfectly capable of.
 
-But there's also network latency! Information needs time to travel - for optic fibre about 67ms for 10.000km, not counting switches, routers and other network hops that further slow it down. That means that if you're running your server in the US and play in europe, your game won't feel particularly responsive.
+But there's also network latency! Information needs time to travel - for optic fibre about 67ms for 10.000km, not counting switches, routers and other network hops that further slow it down. That means that if you're running your server in the US and play in Europe, your game won't feel particularly responsive.
 
 ## About this tutorial
-This tutorial will take you trough the high level concepts and all the tricky bits of the implementation - for brevities sake it skips a lot of project setup, css / styling and most of the more common aspects. To get an impression of how everything fits together, quickly head over to the [Github Repository](https://github.com/deepstreamIO/ds-demo-spaceshooter) - don't worry, I'll wait.
+This tutorial will take you through the high level concepts and all the tricky bits of the implementation - for brevities sake it skips a lot of project setup, css / styling and most of the more common aspects. To get an impression of how everything fits together, quickly head over to the [Github Repository](https://github.com/deepstreamIO/ds-demo-spaceshooter) - don't worry, I'll wait.
 
 ### Latest browsers only
 This tutorial makes liberal use of new browser features like WebGL and ES6 syntax. It works well in all latest browsers (tested in Chrome 51, FF 47 & Edge 25), but won't be much fun in your good old IE 8.
@@ -47,7 +49,7 @@ class Game{
     }
 }
 ```
-To turn your object-hierarchie into an image, you need a "renderer". PIXI will try to use WebGL for rendering, but can fall back to good old canvas if necessary.
+To turn your object-hierarchy into an image, you need a "renderer". PIXI will try to use WebGL for rendering, but can fall back to good old canvas if necessary.
 
 For our spaceshooter, we'll leave it to PIXI to decide which renderer to use. The only requirements are: It needs to extend to the full size of the screen and shouldn't have a background color (so that we can place a spacy image behind)
 
@@ -170,7 +172,6 @@ On the technical site, the gamepad is just another HTML page with its own CSS an
 ![architecture](./tutorial-images/5-architecture.png)
 
 ### Starting a deepstream server
-
 From here on, you'll need a running deepstream server. Just get the version for your operating system from the [install page](https://deepstream.io/install/) and follow the instructions there.
 
 ### Building the controls
@@ -232,9 +233,9 @@ record.set({
 ```
 
 ### Wiring up the gamepads
-From here on, these values will be updated whenever the user interacts with one of the gamepads. We'll use a simplyfied version of the code for this tutorial, to get the full picture have a look [here](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/controls/pad.js)
+From here on, these values will be updated whenever the user interacts with one of the gamepads. We'll use a simplified version of the code for this tutorial, to get the full picture have a look [here](https://github.com/deepstreamIO/ds-demo-spaceshooter/blob/master/controls/pad.js)
 
-First off, let's start with some basic interactions. Everytime the user touches a pad, we want to set `moving` or `shooting` to `true` and back to `false` again once the touch ends:
+First off, let's start with some basic interactions. Every time the user touches a pad, we want to set `moving` or `shooting` to `true` and back to `false` again once the touch ends:
 
 ```javascript
 var area = $( '.area' );
@@ -275,7 +276,7 @@ A [game loop](http://obviam.net/index.php/the-android-game-loop/) is a central c
 
 In the update phase, each entity within the game updates its position, orientation, health, status and so on.
 
-This is usually followed by a global update phase that determines whether every player is still alive, beeing hit etc.
+This is usually followed by a global update phase that determines whether every player is still alive, being hit etc.
 
 Finally, the next frame of the game is drawn by the renderer. This loop happens continuously for every frame, ideally 60 times a second. This means that the logic that's executed on every tick needs to be as performant as possible.
 
