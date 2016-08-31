@@ -82,7 +82,8 @@ Pad.prototype.setSize = function() {
  * @private
  * @returns {void}
  */
-Pad.prototype._onStart = function () {
+Pad.prototype._onStart = function ( event ) {
+	event.preventDefault();
 	this._record.set( this._activeType, true );
 }
 
@@ -104,6 +105,7 @@ Pad.prototype._onMouse = function ( event ) {
  * @returns {void}
  */
 Pad.prototype._onTouch = function ( event ) {
+	event.preventDefault();
 	var touch = event.targetTouches[ 0 ];
 
 	if( touch ) {
