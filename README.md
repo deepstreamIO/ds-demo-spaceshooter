@@ -1,5 +1,7 @@
 # Building a multiplayer space shooter: Part I
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/deepstreamIO/ds-demo-spaceshooter.svg)](https://greenkeeper.io/)
+
 > Space - the final frontier. And a surprisingly good place to blow stuff up. In this tutorial we'll walk through the steps of building a multiplayer space shooter - but one with a twist: Rather than everyone playing away on their own computer, we'll bring the spirit of good old living-room co-op to the modern age.
 
 ![Space shooter](./tutorial-images/in-game-long.gif)
